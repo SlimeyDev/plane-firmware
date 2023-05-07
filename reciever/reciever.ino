@@ -1,57 +1,60 @@
 #include <SPI.h>
-#include <nRF24L01.h>
 #include <RF24.h>
 #include <Servo.h>
 
-int ch_width_1 = 0;
-int ch_width_2 = 0;
-int ch_width_3 = 0;
-int ch_width_4 = 0;
+// NRF24L01+ module configuration
+RF24 radio(7, 8); // CE, CSN pins
+const byte address[6] = "00001";
 
-Servo ch1;
-Servo ch2;
-Servo ch3;
-Servo ch4;
+// Motor configuration
+Servo motor1, motor2;    // Create servo objects for the motors
+int motor1Pin = 3; // PWM pin to control motor1 speed
+int motor2Pin = 9; // PWM pin to control motor2 speed
+int minSpeed = 1000;  // Minimum motor speed (pulse width in microseconds)
+int maxSpeed = 2000;  // Maximum motor speed (pulse width in microseconds)
 
-struct Signal{
-byte throttle;
-};
+// Potentiometer configuration
+int pot1Pin = A3;  // Analog pin to read potentiometer1 value
+int pot2Pin = A1;  // Analog pin to read potentiometer2 value
+int pot1Value = 0; // Current potentiometer1 value
+int pot2Value = 0; // Current potentiometer2 value
 
-Signal data;
-const uint64_t pipeIn = 0xE9E8F0F0E1LL;
-RF24 radio(7, 8); 
-void ResetData()
-{
-data.throttle = 0;
-}
-void setup()
-{
+void setup() {
   Serial.begin(9600);
-  ch1.attach(3);
-  // ch2.attach(3);
-  // ch3.attach(4);
-  // ch4.attach(5);
-  ResetData();
+
+  // NRF24L01+ module setup
   radio.begin();
-  radio.openReadingPipe(1,pipeIn);
+  radio.openReadingPipe(0, address);
+  radio.setPALevel(RF24_PA_MIN);
   radio.startListening();
+
+  // Motor setup
+  motor1.attach(motor1Pin);
+  // motor2.attach(motor2Pin);
+  motor1.writeMicroseconds(minSpeed);
+  // motor2.writeMicroseconds(minSpeed);
 }
-unsigned long lastRecvTime = 0;
-void recvData()
-{
-while ( radio.available() ) {
-radio.read(&data, sizeof(Signal));
-lastRecvTime = millis();
-}
-}
-void loop()
-{
-recvData();
-unsigned long now = millis();
-if ( now - lastRecvTime > 1000 ) {
-ResetData();
-}
-ch_width_1 = map(data.throttle, 0, 1023, 1000, 2000);
-Serial.println(ch_width_1);
-ch1.writeMicroseconds(ch_width_1);
+
+void loop() {
+  // Check if there is data available from the transmitter
+  if (radio.available()) {
+    // Read the received data for potentiometer1
+    radio.read(&pot1Value, sizeof(pot1Value));
+    // Read the received data for potentiometer2
+    radio.read(&pot2Value, sizeof(pot2Value));
+
+    // Map the potentiometer values to the motor speed range
+    int speed1 = map(pot1Value, 0, 1023, minSpeed, maxSpeed);
+    // int speed2 = map(pot2Value, 0, 1023, minSpeed, maxSpeed);
+
+    // Set the motor speeds
+    motor1.writeMicroseconds(speed1);
+    // motor2.writeMicroseconds(speed2);
+
+    // Print the motor speeds on the serial monitor
+    Serial.print("Motor1 speed: ");
+    Serial.println(speed1);
+    // Serial.print(" | Motor2 speed: ");
+    // Serial.println(speed2);
+  }
 }

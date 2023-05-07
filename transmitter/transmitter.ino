@@ -1,38 +1,51 @@
 #include <SPI.h>
-#include <nRF24L01.h>
 #include <RF24.h>
 
-#define Xaxis_pin A0
-#define Yaxis_pin A1
-#define SW_pin 22
+// NRF24L01+ module configuration
+RF24 radio(7, 8); // CE, CSN pins
+const byte address[6] = "00001";
 
-const uint64_t pipeOut = 0xE9E8F0F0E1LL;
+// Potentiometer configuration
+int potPin1 = A3; // Analog pin to read the first potentiometer value
+int potPin2 = A1; // Analog pin to read the second potentiometer value
+int potValue1 = 0; // Current value of the first potentiometer
+int potValue2 = 0; // Current value of the second potentiometer
 
-RF24 radio(7, 8);
+void setup() {
+  Serial.begin(9600);
 
-struct Signal{
-byte throttle;
-};
-
-Signal data;
-
-void ResetData(){
-data.throttle = 0;
+  // NRF24L01+ module setup
+  radio.begin();
+  radio.openWritingPipe(address);
+  radio.setPALevel(RF24_PA_MIN);
+  radio.stopListening();
 }
 
-void setup()
-{
-//Start everything up
-radio.begin();
-radio.openWritingPipe(pipeOut);
-radio.stopListening();
-ResetData();
-}
+void loop() {
+  // Read the value of potentiometer1
+  potValue1 = analogRead(potPin1);
 
+  // Send the value of potentiometer1 over NRF24L01+ module
+  bool success = radio.write(&potValue1, sizeof(potValue1));
 
-void loop()
-{
-data.throttle = (analogRead(Yaxis_pin));
-radio.write(&data, sizeof(Signal));
-delay(100);
+  // Print the value and transmission status for potentiometer1
+  Serial.print("Potentiometer 1 value: ");
+  Serial.print(potValue1);
+  Serial.print(" | Transmission status: ");
+  Serial.println(success);
+
+  // // Read the value of potentiometer2
+  // potValue2 = analogRead(potPin2);
+
+  // // Send the value of potentiometer2 over NRF24L01+ module
+  // success = radio.write(&potValue2, sizeof(potValue2));
+
+  // // Print the value and transmission status for potentiometer2
+  // Serial.print("Potentiometer 2 value: ");
+  // Serial.print(potValue2);
+  // Serial.print(" | Transmission status: ");
+  // Serial.println(success);
+
+  // Wait for some time before sending the next data
+  delay(100);
 }
