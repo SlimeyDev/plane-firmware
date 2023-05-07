@@ -22,29 +22,30 @@ void setup() {
 }
 
 void loop() {
-  // Read the value of potentiometer1
+  // Read the value of potentiometers
   potValue1 = analogRead(potPin1);
+  potValue2 = analogRead(potPin2);
 
-  // Send the value of potentiometer1 over NRF24L01+ module
-  bool success = radio.write(&potValue1, sizeof(potValue1));
+  // Create data object to hold the potentiometer values
+  struct {
+    int pot1Value;
+    int pot2Value;
+  } data;
 
-  // Print the value and transmission status for potentiometer1
+  // Assign potentiometer values to data object
+  data.pot1Value = potValue1;
+  data.pot2Value = potValue2;
+
+  // Send the data object over NRF24L01+ module
+  bool success = radio.write(&data, sizeof(data));
+
+  // Print the values and transmission status for potentiometers
   Serial.print("Potentiometer 1 value: ");
   Serial.print(potValue1);
+  Serial.print(" | Potentiometer 2 value: ");
+  Serial.print(potValue2);
   Serial.print(" | Transmission status: ");
   Serial.println(success);
-
-  // // Read the value of potentiometer2
-  // potValue2 = analogRead(potPin2);
-
-  // // Send the value of potentiometer2 over NRF24L01+ module
-  // success = radio.write(&potValue2, sizeof(potValue2));
-
-  // // Print the value and transmission status for potentiometer2
-  // Serial.print("Potentiometer 2 value: ");
-  // Serial.print(potValue2);
-  // Serial.print(" | Transmission status: ");
-  // Serial.println(success);
 
   // Wait for some time before sending the next data
   delay(100);
