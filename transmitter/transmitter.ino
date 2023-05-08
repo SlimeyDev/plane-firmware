@@ -8,8 +8,10 @@ const byte address[6] = "00001";
 // Potentiometer configuration
 int potPin1 = A3; // Analog pin to read the first potentiometer value
 int potPin2 = A1; // Analog pin to read the second potentiometer value
+int potPin3 = A2;
 int potValue1 = 0; // Current value of the first potentiometer
 int potValue2 = 0; // Current value of the second potentiometer
+int potValue3 = 0; // Current value of the second potentiometer
 
 void setup() {
   Serial.begin(9600);
@@ -25,16 +27,19 @@ void loop() {
   // Read the value of potentiometers
   potValue1 = analogRead(potPin1);
   potValue2 = analogRead(potPin2);
+  potValue3 = analogRead(potPin3);
 
   // Create data object to hold the potentiometer values
   struct {
     int pot1Value;
     int pot2Value;
+    int pot3Value;
   } data;
 
   // Assign potentiometer values to data object
   data.pot1Value = potValue1;
   data.pot2Value = potValue2;
+  data.pot3Value = potValue3;
 
   // Send the data object over NRF24L01+ module
   bool success = radio.write(&data, sizeof(data));
@@ -44,9 +49,8 @@ void loop() {
   Serial.print(potValue1);
   Serial.print(" | Potentiometer 2 value: ");
   Serial.print(potValue2);
+  Serial.print(" | Potentiometer 3 value: ");
+  Serial.print(potValue3);
   Serial.print(" | Transmission status: ");
   Serial.println(success);
-
-  // Wait for some time before sending the next data
-  delay(100);
 }
