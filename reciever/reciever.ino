@@ -65,18 +65,4 @@ void loop() {
     Serial.print("Elevator position: ");
     Serial.println(elevatorPos);
   }
-
-  // Read the potentiometer values and send them to the transmitter
-  PotentiometerData data;
-  readPotentiometers(data);
-  bool success = radio.write(&data, sizeof(data));
-  Serial.print("Joystick values: ");
-  Serial.print(data.pot1Value);
-  Serial.print(", ");
-  Serial.print(data.pot2Value);
-  Serial.print(" | Transmission status: ");
-  Serial.println(success);
-
-  // Wait for some time before sending the next data
-  delay(100);
 }
