@@ -2,28 +2,24 @@
 #include <RF24.h>
 #include <Servo.h>
 
-// NRF24L01+ module configuration
-RF24 radio(7, 8); // CE, CSN pins
+RF24 radio(7, 8);
 const byte address[6] = "00001";
 
-// Motor configuration
-Servo motor1;     // Create a servo object for the motor
+Servo motor1;
 Servo elevator;
 Servo rudder;
 
-int motor1Pin = 3; // PWM pin to control motor1 speed
+int motor1Pin = 3;
 int elevatorPin = 9;
 int rudderPin = 5;
-int minSpeed = 1000;  // Minimum motor speed (pulse width in microseconds)
-int maxSpeed = 2000;  // Maximum motor speed (pulse width in microseconds)
+int minSpeed = 1000;
+int maxSpeed = 2000;
 
-// Potentiometer configuration
-int pot1Pin = A3;  // Analog pin to read potentiometer1 value
-int pot1Value = 0; // Current potentiometer1 value
-int pot2Pin = A1;  // Analog pin to read potentiometer2 value
-int pot2Value = 0; // Current potentiometer2 value
+int pot1Pin = A3;
+int pot1Value = 0;
+int pot2Pin = A1;
+int pot2Value = 0;
 
-// Data structure to hold potentiometer values
 struct PotentiometerData {
   int pot1Value;
   int pot2Value;
@@ -47,24 +43,19 @@ void setup() {
 }
 
 void loop() {
-  // Check if there is data available from the transmitter
   if (radio.available()) {
-    // Read the potentiometer values from the transmitter
     PotentiometerData data;
     radio.read(&data, sizeof(data));
 
-    // Update the motor speed using the motor potentiometer
     int motorSpeed = map(data.pot1Value, 0, 1023, minSpeed, maxSpeed);
     motor1.writeMicroseconds(motorSpeed);
 
-    // Update the elevator position using the elevator potentiometer
     int elevatorPos = map(data.pot2Value, 0, 1023, 1000, 2000);
     elevator.writeMicroseconds(elevatorPos);
 
     int rudderPos = map(data.pot3Value, 0, 1023, 1000, 2000);
     rudder.writeMicroseconds(rudderPos);
 
-    // Print the motor speed and elevator position on the serial monitor
     Serial.print("Motor speed: ");
     Serial.print(motorSpeed);
     Serial.print(", ");
