@@ -5,25 +5,25 @@
 RF24 radio(7, 8);
 const byte address[6] = "00001";
 
-Servo motor1;
+Servo motor;
 Servo elevator;
 Servo rudder;
+Servo AileronL;
+Servo AileronR;
 
-int motor1Pin = 3;
+int motorPin = 3;
 int elevatorPin = 9;
 int rudderPin = 5;
+int AileronLPin = 10;
+int AileronRPin = 6;
 int minSpeed = 1000;
 int maxSpeed = 2000;
-
-int pot1Pin = A3;
-int pot1Value = 0;
-int pot2Pin = A1;
-int pot2Value = 0;
 
 struct PotentiometerData {
   int pot1Value;
   int pot2Value;
   int pot3Value;
+  int pot4Value;
 };
 
 void setup() {
@@ -34,12 +34,12 @@ void setup() {
   radio.setPALevel(RF24_PA_MIN);
   radio.startListening();
 
-  motor1.attach(motor1Pin);
-  motor1.writeMicroseconds(minSpeed);
+  motor.attach(motorPin);
+  motor.writeMicroseconds(minSpeed);
   elevator.attach(elevatorPin);
-  elevator.write(1000);
   rudder.attach(rudderPin);
-  rudder.write(1000);
+  AileronL.attach(AileronLPin);
+  AileronR.attach(AileronRPin);
 }
 
 void loop() {
@@ -48,13 +48,19 @@ void loop() {
     radio.read(&data, sizeof(data));
 
     int motorSpeed = map(data.pot1Value, 0, 1023, minSpeed, maxSpeed);
-    motor1.writeMicroseconds(motorSpeed);
+    motor.writeMicroseconds(motorSpeed);
 
     int elevatorPos = map(data.pot2Value, 0, 1023, 1000, 2000);
     elevator.writeMicroseconds(elevatorPos);
 
     int rudderPos = map(data.pot3Value, 0, 1023, 1000, 2000);
     rudder.writeMicroseconds(rudderPos);
+    
+    int aileronLPos = map(data.pot4Value, 0, 1023, 1000, 2000);
+    AileronL.writeMicroseconds(aileronLPos);
+
+    int aileronRPos = map(data.pot4Value, 0, 1023, 1000, 2000);
+    AileronR.writeMicroseconds(aileronRPos);
 
     Serial.print("Motor speed: ");
     Serial.print(motorSpeed);
@@ -63,6 +69,9 @@ void loop() {
     Serial.print(elevatorPos);
     Serial.print(", ");
     Serial.print("Rudder position: ");
+    Serial.println(rudderPos);
+    Serial.print(", ");
+    Serial.print("Ailerons position: ");
     Serial.println(rudderPos);
   }
 }

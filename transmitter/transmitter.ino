@@ -52,5 +52,4 @@ void loop() {
   Serial.print(potValue4);
   Serial.print(" | Transmission status: ");
   Serial.println(success);
-  delay(100);
 }
