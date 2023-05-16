@@ -12,6 +12,7 @@ int potValue1 = 0;
 int potValue2 = 0;
 int potValue3 = 0;
 int potValue4 = 0;
+int LED = 24;
 
 void setup() {
   Serial.begin(9600);
@@ -42,14 +43,16 @@ void loop() {
 
   bool success = radio.write(&data, sizeof(data));
 
-  Serial.print("Potentiometer 1 value: ");
-  Serial.print(potValue1);
-  Serial.print(" | Potentiometer 2 value: ");
-  Serial.print(potValue2);
-  Serial.print(" | Potentiometer 3 value: ");
-  Serial.print(potValue3);
-  Serial.print(" | Potentiometer 4 value: ");
-  Serial.print(potValue4);
-  Serial.print(" | Transmission status: ");
-  Serial.println(success);
+  // Serial.print("Potentiometer 1 value: ");
+  // Serial.print(potValue1);
+  // Serial.print(" | Potentiometer 2 value: ");
+  // Serial.print(potValue2);
+  // Serial.print(" | Potentiometer 3 value: ");
+  // Serial.print(potValue3);
+  // Serial.print(" | Potentiometer 4 value: ");
+  // Serial.print(potValue4);
+  // Serial.print(" | Transmission status: ");
+  // Serial.println(success);
+
+  digitalWrite(LED, success);
 }

@@ -62,16 +62,16 @@ void loop() {
     int aileronRPos = map(data.pot4Value, 0, 1023, 1000, 2000);
     AileronR.writeMicroseconds(aileronRPos);
 
-    Serial.print("Motor speed: ");
-    Serial.print(motorSpeed);
-    Serial.print(", ");
-    Serial.print("Elevator position: ");
-    Serial.print(elevatorPos);
-    Serial.print(", ");
-    Serial.print("Rudder position: ");
-    Serial.println(rudderPos);
-    Serial.print(", ");
-    Serial.print("Ailerons position: ");
-    Serial.println(rudderPos);
+    // Serial.print("Motor speed: ");
+    // Serial.print(motorSpeed);
+    // Serial.print(", ");
+    // Serial.print("Elevator position: ");
+    // Serial.print(elevatorPos);
+    // Serial.print(", ");
+    // Serial.print("Rudder position: ");
+    // Serial.println(rudderPos);
+    // Serial.print(", ");
+    // Serial.print("Ailerons position: ");
+    // Serial.println(rudderPos);
   }
 }
